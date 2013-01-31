@@ -1,0 +1,10 @@
+*.sln
+*.suo
+*.csproj
+bin/
+Images/
+obj/
+Properties/
+App.xaml
+App.xaml.cs
+App.config
