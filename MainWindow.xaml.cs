@@ -114,8 +114,9 @@ namespace FaceTrackingBasics
 
         public void TimerEnd()
         {
-            Plupp plupp = new Plupp(true, 5, (float)this.ActualWidth);
+            Plupp plupp = new Plupp(true, 5, (float)this.ActualWidth/2, (float)this.ActualHeight/2);
             MainGrid.Children.Add(plupp.ellipse);
+            System.Windows.Rect rect = plupp.returnRectangle();
             pluppar.Add(plupp);
         }
 

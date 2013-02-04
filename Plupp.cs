@@ -13,14 +13,16 @@ namespace FaceTrackingBasics
         private bool rightDirection; // 0= right, 1 = left
         private int speed;
         private float maxWidth;
+        private float maxHeight;
         public Ellipse ellipse;
 
-        public Plupp(bool rightDirection, int speed, float maxWidth)
+        public Plupp(bool rightDirection, int speed, float maxWidth, float maxHeight)
         {
            
             this.rightDirection = rightDirection;
             this.speed = speed;
             this.maxWidth = maxWidth;
+            this.maxHeight = maxHeight;
             ellipse = new Ellipse();
             ellipse.Visibility = Visibility.Visible;
             ellipse.Width = 50;
@@ -39,7 +41,8 @@ namespace FaceTrackingBasics
 
         public Rect returnRectangle()
         {
-            Rect rect = new Rect(new Point(ellipse.Margin.Left, ellipse.Margin.Top), new Point(ellipse.Margin.Top + ellipse.ActualHeight, ellipse.Margin.Left + ellipse.ActualWidth;
+            Size size = new Size(ellipse.Width, ellipse.Height);
+            Rect rect = new Rect(new Point(maxWidth + ellipse.Margin.Left, maxHeight + ellipse.Margin.Top), size);
             return rect;
         }
 
