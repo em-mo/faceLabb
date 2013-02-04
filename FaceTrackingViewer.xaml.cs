@@ -196,15 +196,6 @@ namespace FaceTrackingBasics
             }
         }
 
-        public Vector3DF ReturnRotationValues()
-        {
-            foreach  (SkeletonFaceTracker tracker in trackedSkeletons.Values)
-            {
-                return tracker.getRotation();
-            }
-            return new Vector3DF();
-        }
-
         private void OnSensorChanged(KinectSensor oldSensor, KinectSensor newSensor)
         {
             if (oldSensor != null)
@@ -256,6 +247,24 @@ namespace FaceTrackingBasics
             }
         }
 
+        public Vector3DF ReturnRotationValues()
+        {
+            foreach (SkeletonFaceTracker tracker in trackedSkeletons.Values)
+            {
+                return tracker.getRotation();
+            }
+            return new Vector3DF();
+        }
+
+        public float ReturnMouthState()
+        {
+            foreach (SkeletonFaceTracker tracker in trackedSkeletons.Values)
+            {
+                return tracker.getMouthState();
+            }
+            return 0;
+        }
+
         private class SkeletonFaceTracker : IDisposable
         {
             private FaceTrackFrame frame;
@@ -286,6 +295,11 @@ namespace FaceTrackingBasics
                 if(frame != null)
                     return frame.Rotation;
                 return new Vector3DF();
+            }
+
+            public float getMouthState()
+            {
+                return frame.GetAnimationUnitCoefficients()[AnimationUnit.JawLower];
             }
 
             public void DrawFaceModel(DrawingContext drawingContext)
@@ -367,7 +381,7 @@ namespace FaceTrackingBasics
                             // only need to get this once.  It doesn't change.
                             faceTriangles = frame.GetTriangles();
                         }
-
+                        frame.GetAnimationUnitCoefficients()
                         this.facePoints = frame.GetProjected3DShape();
                     }
                 }
