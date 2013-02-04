@@ -32,6 +32,8 @@ namespace FaceTrackingBasics
         private List<Plupp> pluppar = new List<Plupp>();
         //
 
+        private Muncher muncher;
+        private Random randomGenerator;
         public MainWindow()
         {
             InitializeComponent();
@@ -46,6 +48,9 @@ namespace FaceTrackingBasics
             sensorChooser.KinectChanged += SensorChooserOnKinectChanged;
 
             sensorChooser.Start();
+
+            muncher = new Muncher();
+            randomGenerator = new Random();
         }
 
         private void SensorChooserOnKinectChanged(object sender, KinectChangedEventArgs kinectChangedEventArgs)
@@ -159,6 +164,47 @@ namespace FaceTrackingBasics
                 textBox2.Text = vector.Y.ToString();
                 textBox3.Text = vector.Z.ToString();
                 textBoxMun.Text = mouthValue.ToString();
+            }
+        }
+
+        private void SpawnFoodStuff(System.Windows.Rect faceRect)
+        {
+            int spawnX = randomGenerator.Next(0, 1) * 640;
+            int spawnY = randomGenerator.Next(0, 480);
+
+            double diffX = faceRect.X - spawnX;
+            double diffY = faceRect.Y - spawnY;
+
+            double angle = Math.Atan(diffY / diffX);
+
+            double velocityX = Math.Cos(angle) * PluppVelocity;
+            double velocityY = Math.Sin(angle) * PluppVelocity;
+        }
+
+        private const double PluppVelocity = 5;
+
+        private class Muncher
+        {
+            private const float OpenThreshold = 0.5F;
+            private const float ClosedThreshold = 0.2F;
+            System.Windows.Rect rect;
+            private enum MouthState { Open, Closed };
+
+            private MouthState state = MouthState.Closed;
+
+            public bool checkBite(float mouthPosition)
+            {
+                bool result = false;
+                if (state == MouthState.Closed && mouthPosition > OpenThreshold)
+                {
+                    state = MouthState.Open;
+                }
+                else if (state == MouthState.Open && mouthPosition < ClosedThreshold)
+                {
+                    state = MouthState.Closed;
+                    result = true;
+                }
+                return result;
             }
         }
     }
