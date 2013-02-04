@@ -167,6 +167,15 @@ namespace FaceTrackingBasics
             }
         }
 
+        private void checkPluppToHeadCollisions()
+        {
+            System.Windows.Rect faceRect = faceTrackingViewer.ReturnFaceRect();
+            foreach (Plupp plupp in pluppar)
+            {
+                
+            }
+        }
+
         private void SpawnFoodStuff(System.Windows.Rect faceRect)
         {
             int spawnX = randomGenerator.Next(0, 1) * 640;
