@@ -299,7 +299,9 @@ namespace FaceTrackingBasics
 
             public float getMouthState()
             {
-                return frame.GetAnimationUnitCoefficients()[AnimationUnit.JawLower];
+                if(frame != null)
+                    return frame.GetAnimationUnitCoefficients()[AnimationUnit.JawLower];
+                return 0;
             }
 
             public void DrawFaceModel(DrawingContext drawingContext)
@@ -381,7 +383,7 @@ namespace FaceTrackingBasics
                             // only need to get this once.  It doesn't change.
                             faceTriangles = frame.GetTriangles();
                         }
-                        frame.GetAnimationUnitCoefficients()
+                        frame.GetAnimationUnitCoefficients();
                         this.facePoints = frame.GetProjected3DShape();
                     }
                 }

@@ -14,6 +14,8 @@ namespace FaceTrackingBasics
     using Microsoft.Kinect;
     using Microsoft.Kinect.Toolkit;
     using Microsoft.Kinect.Toolkit.FaceTracking;
+    using System.Timers;
+    using System.Collections.Generic;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -24,10 +26,19 @@ namespace FaceTrackingBasics
         private WriteableBitmap colorImageWritableBitmap;
         private byte[] colorImageData;
         private ColorImageFormat currentColorImageFormat = ColorImageFormat.Undefined;
+       
+        // added
+        private DateTime time = new DateTime();
+        private List<Plupp> pluppar = new List<Plupp>();
+        //
 
         public MainWindow()
         {
             InitializeComponent();
+
+            //added
+            time = DateTime.Now;
+            //
 
             var faceTrackingViewerBinding = new Binding("Kinect") { Source = sensorChooser };
             faceTrackingViewer.SetBinding(FaceTrackingViewer.KinectProperty, faceTrackingViewerBinding);
@@ -96,6 +107,13 @@ namespace FaceTrackingBasics
             faceTrackingViewer.Dispose();
         }
 
+        public void TimerEnd()
+        {
+            Plupp plupp = new Plupp(true, 5, (float)this.ActualWidth);
+            MainGrid.Children.Add(plupp.ellipse);
+            pluppar.Add(plupp);
+        }
+
         private void KinectSensorOnAllFramesReady(object sender, AllFramesReadyEventArgs allFramesReadyEventArgs)
         {
 
@@ -124,10 +142,23 @@ namespace FaceTrackingBasics
                     colorImageFrame.Width * Bgr32BytesPerPixel,
                     0);
 
+                if (DateTime.Now.Second - time.Second > 3) 
+                {
+                    TimerEnd();
+                    time = DateTime.Now;
+                }
+
+                foreach (Plupp plupp in pluppar)
+                {
+                    plupp.Update();
+                }
+
                 Vector3DF vector = faceTrackingViewer.ReturnRotationValues();
+                float mouthValue = faceTrackingViewer.ReturnMouthState();
                 textBox1.Text = vector.X.ToString();
                 textBox2.Text = vector.Y.ToString();
                 textBox3.Text = vector.Z.ToString();
+                textBoxMun.Text = mouthValue.ToString();
             }
         }
     }
