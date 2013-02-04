@@ -30,10 +30,11 @@ namespace FaceTrackingBasics
         // added
         private DateTime time = new DateTime();
         private List<Plupp> pluppar = new List<Plupp>();
-        //
 
         private Muncher muncher;
         private Random randomGenerator;
+        //
+
         public MainWindow()
         {
             InitializeComponent();
@@ -158,8 +159,19 @@ namespace FaceTrackingBasics
                     plupp.Update();
                 }
 
+                float mouthState = faceTrackingViewer.ReturnMouthState();
+
+                if (muncher.checkBite(mouthState))
+                {
+                    foreach (Plupp plupp in checkPluppToHeadCollisions())
+                    {
+                        MainGrid.Children.Remove(plupp.ellipse);
+                        pluppar.Remove(plupp);
+                    }
+                }
+
                 Vector3DF vector = faceTrackingViewer.ReturnRotationValues();
-                float mouthValue = faceTrackingViewer.ReturnMouthState();
+                float mouthValue = mouthState;
                 textBox1.Text = vector.X.ToString();
                 textBox2.Text = vector.Y.ToString();
                 textBox3.Text = vector.Z.ToString();
@@ -167,13 +179,38 @@ namespace FaceTrackingBasics
             }
         }
 
-        private void checkPluppToHeadCollisions()
+        private List<Plupp> checkPluppToHeadCollisions()
         {
             System.Windows.Rect faceRect = faceTrackingViewer.ReturnFaceRect();
+            List<Plupp> collisionList = new List<Plupp>();
+
             foreach (Plupp plupp in pluppar)
             {
-                
+                if (faceRect.IntersectsWith(plupp.returnRectangle()))
+                    collisionList.Add(plupp);
             }
+            return collisionList;
+        }
+
+        private bool checkPluppToHeadTilt(System.Windows.Rect head, System.Windows.Rect plupp)
+        {
+            double diffX = Math.Abs(head.X - plupp.X);
+            double diffY = Math.Abs(head.Y - plupp.Y);
+
+            double angle = Math.Atan(diffY / diffX);
+
+            return true;
+        }
+
+        private bool checkPluppToHeadDirection(System.Windows.Rect head, System.Windows.Rect plupp)
+        {
+            double diffX = head.X - plupp.X;
+            double headDirection = faceTrackingViewer.ReturnRotationValues().Y;
+
+            if (diffX < 0 && headDirection < 0 || diffX > 0 && headDirection > 0)
+                return true;
+
+            return false;
         }
 
         private void SpawnFoodStuff(System.Windows.Rect faceRect)
