@@ -125,9 +125,9 @@ namespace FaceTrackingBasics
                     0);
 
                 Vector3DF vector = faceTrackingViewer.ReturnRotationValues();
-                /*textBox1.Text = vector.X.ToString();
-                textBox1.Text = vector.Y.ToString();
-                textBox1.Text = vector.Z.ToString();*/
+                textBox1.Text = vector.X.ToString();
+                textBox2.Text = vector.Y.ToString();
+                textBox3.Text = vector.Z.ToString();
             }
         }
     }
