@@ -37,6 +37,12 @@ namespace FaceTrackingBasics
             this.ellipse.Margin = margin;
         }
 
+        public Rect returnRectangle()
+        {
+            Rect rect = new Rect(new Point(ellipse.Margin.Left, ellipse.Margin.Top), new Point(ellipse.Margin.Top + ellipse.ActualHeight, ellipse.Margin.Left + ellipse.ActualWidth;
+            return rect;
+        }
+
         public void Update()
         {
             Thickness margin;
