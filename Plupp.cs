@@ -14,6 +14,7 @@ namespace FaceTrackingBasics
         private int speed;
         private float maxWidth;
         private float maxHeight;
+        private DateTime TTL;
         public Ellipse ellipse;
 
         public Plupp(bool rightDirection, int speed, float maxWidth, float maxHeight)
@@ -29,24 +30,26 @@ namespace FaceTrackingBasics
             ellipse.Height = 50;
             ellipse.Fill = new SolidColorBrush(Colors.DarkCyan);
 
+            TTL = DateTime.Now.AddSeconds(15);
+
             Thickness margin = new Thickness();
             Random random = new Random();
-            float height = random.Next(0, 50);
+            float height = random.Next(0, 60);
             if(rightDirection)
-                margin = new Thickness(-maxWidth, height,0,0);
+                margin = new Thickness(-maxWidth + ellipse.Width, -height * 3.8,0,0);
             else if(!rightDirection)
-                margin = new Thickness(maxWidth, height,0,0);
+                margin = new Thickness(maxWidth + ellipse.Width, -height * 3.8, 0, 0);
             this.ellipse.Margin = margin;
         }
 
         public Rect returnRectangle()
         {
             Size size = new Size(ellipse.Width, ellipse.Height);
-            Rect rect = new Rect(new Point(maxWidth + ellipse.Margin.Left, maxHeight + ellipse.Margin.Top), size);
+            Rect rect = new Rect(new Point((maxWidth + ellipse.Margin.Left) / 2, (maxHeight + ellipse.Margin.Top) / 2), size);
             return rect;
         }
 
-        public void Update()
+        public bool Update()
         {
             Thickness margin;
             switch (rightDirection)
@@ -63,7 +66,12 @@ namespace FaceTrackingBasics
                     break;
                 default:
                     break;
-            }    
+            }
+
+            if (DateTime.Now > TTL)
+                return true;
+            else
+                return false;
         }
     }
 }

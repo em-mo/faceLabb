@@ -39,10 +39,6 @@ namespace FaceTrackingBasics
         {
             InitializeComponent();
 
-            //added
-            time = DateTime.Now;
-            //
-
             var faceTrackingViewerBinding = new Binding("Kinect") { Source = sensorChooser };
             faceTrackingViewer.SetBinding(FaceTrackingViewer.KinectProperty, faceTrackingViewerBinding);
 
@@ -50,8 +46,11 @@ namespace FaceTrackingBasics
 
             sensorChooser.Start();
 
+            //added
             muncher = new Muncher();
             randomGenerator = new Random();
+            time = DateTime.Now;
+            //
         }
 
         private void SensorChooserOnKinectChanged(object sender, KinectChangedEventArgs kinectChangedEventArgs)
@@ -113,14 +112,7 @@ namespace FaceTrackingBasics
             faceTrackingViewer.Dispose();
         }
 
-        public void TimerEnd()
-        {
-            Plupp plupp = new Plupp(true, 5, (float)this.ActualWidth/2, (float)this.ActualHeight/2);
-            MainGrid.Children.Add(plupp.ellipse);
-            System.Windows.Rect rect = plupp.returnRectangle();
-            pluppar.Add(plupp);
-        }
-
+        private int count = 0;
         private void KinectSensorOnAllFramesReady(object sender, AllFramesReadyEventArgs allFramesReadyEventArgs)
         {
 
@@ -149,23 +141,36 @@ namespace FaceTrackingBasics
                     colorImageFrame.Width * Bgr32BytesPerPixel,
                     0);
 
-                if (DateTime.Now.Second - time.Second > 3) 
+                // **************'
+                if (time.AddSeconds(3) < DateTime.Now) 
                 {
                     TimerEnd();
                     time = DateTime.Now;
                 }
 
+                List<Plupp> removeList = new List<Plupp>();
                 foreach (Plupp plupp in pluppar)
                 {
-                    plupp.Update();
+                    if (plupp.Update())
+                    {
+                        removeList.Add(plupp);
+                    }
                 }
 
+                foreach (Plupp plupp in removeList)
+                {
+                    MainGrid.Children.Remove(plupp.ellipse);
+                    pluppar.Remove(plupp);
+                }
+                
                 float mouthState = faceTrackingViewer.ReturnMouthState();
 
                 if (muncher.checkBite(mouthState))
                 {
+                    System.Console.WriteLine("Munch");
                     foreach (Plupp plupp in checkPluppToHeadCollisions())
                     {
+                        System.Console.WriteLine("OmNOM");
                         MainGrid.Children.Remove(plupp.ellipse);
                         pluppar.Remove(plupp);
                     }
@@ -175,7 +180,7 @@ namespace FaceTrackingBasics
                 float mouthValue = mouthState;
                 textBox1.Text = vector.X.ToString();
                 textBox2.Text = vector.Y.ToString();
-                textBox3.Text = vector.Z.ToString();
+                //textBox3.Text = vector.Z.ToString();
                 textBoxMun.Text = mouthValue.ToString();
             }
         }
@@ -187,7 +192,8 @@ namespace FaceTrackingBasics
 
             foreach (Plupp plupp in pluppar)
             {
-                if (faceRect.IntersectsWith(plupp.returnRectangle()))
+                System.Windows.Rect pluppRect = plupp.returnRectangle();
+                if (faceRect.IntersectsWith(pluppRect) && checkPluppToHeadDirection(faceRect, pluppRect))
                     collisionList.Add(plupp);
             }
             return collisionList;
@@ -195,8 +201,8 @@ namespace FaceTrackingBasics
 
         private bool checkPluppToHeadTilt(System.Windows.Rect head, System.Windows.Rect plupp)
         {
-            double diffX = head.X - plupp.X;
-            double diffY = head.Y - plupp.Y;
+            double diffX = head.X + head.Width / 2 - plupp.X + plupp.Width / 2;
+            double diffY = head.Y + head.Height / 2 - plupp.Y + plupp.Height / 2;
 
             double angle = Math.Atan(diffY / diffX)* 360 / Math.PI;
 
@@ -210,7 +216,7 @@ namespace FaceTrackingBasics
 
         private bool checkPluppToHeadDirection(System.Windows.Rect head, System.Windows.Rect plupp)
         {
-            double diffX = head.X - plupp.X;
+            double diffX = head.X + head.Width / 2 - plupp.X + plupp.Width / 2;
             double headDirection = faceTrackingViewer.ReturnRotationValues().Y;
 
             if (diffX < 0 && headDirection < 0 || diffX > 0 && headDirection > 0)
@@ -233,13 +239,19 @@ namespace FaceTrackingBasics
             double velocityY = Math.Sin(angle) * PluppVelocity;
         }
 
+        public void TimerEnd()
+        {
+            Plupp plupp = new Plupp(true, 5, (float)MainGrid.ActualWidth, (float)MainGrid.ActualHeight);
+            MainGrid.Children.Add(plupp.ellipse);
+            System.Windows.Rect rect = plupp.returnRectangle();
+            pluppar.Add(plupp);
+        }
         private const double PluppVelocity = 5;
 
         private class Muncher
         {
-            private const float OpenThreshold = 0.5F;
+            private const float OpenThreshold = 0.4F;
             private const float ClosedThreshold = 0.2F;
-            System.Windows.Rect rect;
             private enum MouthState { Open, Closed };
 
             private MouthState state = MouthState.Closed;
