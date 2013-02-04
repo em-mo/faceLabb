@@ -302,6 +302,18 @@ namespace FaceTrackingBasics
                 return frame.GetAnimationUnitCoefficients()[AnimationUnit.JawLower];
             }
 
+            public System.Windows.Rect getFaceRect()
+            {
+                if (frame != null)
+                {
+                    var kinectRect = frame.FaceRect;
+                    System.Windows.Rect rect = new System.Windows.Rect(kinectRect.Top, kinectRect.Left, kinectRect.Width, kinectRect.Height);
+                    return rect;
+                }
+                return new System.Windows.Rect();
+            }
+            
+
             public void DrawFaceModel(DrawingContext drawingContext)
             {
                 if (!this.lastFaceTrackSucceeded || this.skeletonTrackingState != SkeletonTrackingState.Tracked)
@@ -381,7 +393,6 @@ namespace FaceTrackingBasics
                             // only need to get this once.  It doesn't change.
                             faceTriangles = frame.GetTriangles();
                         }
-                        frame.GetAnimationUnitCoefficients()
                         this.facePoints = frame.GetProjected3DShape();
                     }
                 }
