@@ -251,7 +251,9 @@ namespace FaceTrackingBasics
         {
             foreach (SkeletonFaceTracker tracker in trackedSkeletons.Values)
             {
-                return tracker.getRotation();
+                Vector3DF vector = tracker.getRotation();
+                if (vector != null)
+                    return vector;
             }
             return new Vector3DF();
         }
@@ -263,6 +265,17 @@ namespace FaceTrackingBasics
                 return tracker.getMouthState();
             }
             return 0;
+        }
+
+        public System.Windows.Rect ReturnFaceRect()
+        {
+            foreach (SkeletonFaceTracker tracker in trackedSkeletons.Values)
+            {
+                System.Windows.Rect rect = tracker.getFaceRect();
+                if (rect != null)
+                    return rect;
+            }
+            return new System.Windows.Rect();
         }
 
         private class SkeletonFaceTracker : IDisposable
