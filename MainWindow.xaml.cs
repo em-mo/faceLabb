@@ -13,7 +13,7 @@ namespace FaceTrackingBasics
     using System.Windows.Media.Imaging;
     using Microsoft.Kinect;
     using Microsoft.Kinect.Toolkit;
-
+    using Microsoft.Kinect.Toolkit.FaceTracking;
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -98,6 +98,7 @@ namespace FaceTrackingBasics
 
         private void KinectSensorOnAllFramesReady(object sender, AllFramesReadyEventArgs allFramesReadyEventArgs)
         {
+
             using (var colorImageFrame = allFramesReadyEventArgs.OpenColorImageFrame())
             {
                 if (colorImageFrame == null)
@@ -122,6 +123,11 @@ namespace FaceTrackingBasics
                     this.colorImageData,
                     colorImageFrame.Width * Bgr32BytesPerPixel,
                     0);
+
+                Vector3DF vector = faceTrackingViewer.ReturnRotationValues();
+                /*textBox1.Text = vector.X.ToString();
+                textBox1.Text = vector.Y.ToString();
+                textBox1.Text = vector.Z.ToString();*/
             }
         }
     }

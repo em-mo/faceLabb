@@ -23,6 +23,9 @@ namespace FaceTrackingBasics
     /// </summary>
     public partial class FaceTrackingViewer : UserControl, IDisposable
     {
+
+        //added variables
+        //
         public static readonly DependencyProperty KinectProperty = DependencyProperty.Register(
             "Kinect", 
             typeof(KinectSensor), 
@@ -193,6 +196,15 @@ namespace FaceTrackingBasics
             }
         }
 
+        public Vector3DF ReturnRotationValues()
+        {
+            foreach  (SkeletonFaceTracker tracker in trackedSkeletons.Values)
+            {
+                return tracker.getRotation();
+            }
+            return new Vector3DF();
+        }
+
         private void OnSensorChanged(KinectSensor oldSensor, KinectSensor newSensor)
         {
             if (oldSensor != null)
@@ -246,6 +258,8 @@ namespace FaceTrackingBasics
 
         private class SkeletonFaceTracker : IDisposable
         {
+            private FaceTrackFrame frame;
+
             private static FaceTriangle[] faceTriangles;
 
             private EnumIndexableCollection<FeaturePoint, PointF> facePoints;
@@ -265,6 +279,13 @@ namespace FaceTrackingBasics
                     this.faceTracker.Dispose();
                     this.faceTracker = null;
                 }
+            }
+
+            public Vector3DF getRotation()
+            {
+                if(frame != null)
+                    return frame.Rotation;
+                return new Vector3DF();
             }
 
             public void DrawFaceModel(DrawingContext drawingContext)
@@ -335,7 +356,7 @@ namespace FaceTrackingBasics
 
                 if (this.faceTracker != null)
                 {
-                    FaceTrackFrame frame = this.faceTracker.Track(
+                    frame = this.faceTracker.Track(
                         colorImageFormat, colorImage, depthImageFormat, depthImage, skeletonOfInterest);
 
                     this.lastFaceTrackSucceeded = frame.TrackSuccessful;
