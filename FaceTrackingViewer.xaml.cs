@@ -322,7 +322,7 @@ namespace FaceTrackingBasics
                 if (frame != null)
                 {
                     var kinectRect = frame.FaceRect;
-                    System.Windows.Rect rect = new System.Windows.Rect(kinectRect.Top, kinectRect.Left, kinectRect.Width, kinectRect.Height);
+                    System.Windows.Rect rect = new System.Windows.Rect(kinectRect.Left, kinectRect.Top, kinectRect.Width, kinectRect.Height);
                     return rect;
                 }
                 return new System.Windows.Rect();

@@ -195,12 +195,17 @@ namespace FaceTrackingBasics
 
         private bool checkPluppToHeadTilt(System.Windows.Rect head, System.Windows.Rect plupp)
         {
-            double diffX = Math.Abs(head.X - plupp.X);
-            double diffY = Math.Abs(head.Y - plupp.Y);
+            double diffX = head.X - plupp.X;
+            double diffY = head.Y - plupp.Y;
 
-            double angle = Math.Atan(diffY / diffX);
+            double angle = Math.Atan(diffY / diffX)* 360 / Math.PI;
 
-            return true;
+            double faceAngle = faceTrackingViewer.ReturnRotationValues().X;
+
+            if (Math.Abs(angle - faceAngle) < 5)
+                return true;
+
+            return false;
         }
 
         private bool checkPluppToHeadDirection(System.Windows.Rect head, System.Windows.Rect plupp)
