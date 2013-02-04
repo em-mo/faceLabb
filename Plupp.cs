@@ -10,17 +10,17 @@ namespace FaceTrackingBasics
 {
     class Plupp
     {
-        private bool rightDirection; // 0= right, 1 = left
+        private int rightDirection; // 0= right, 1 = left
         private int speed;
         private float maxWidth;
         private float maxHeight;
         private DateTime TTL;
         public Ellipse ellipse;
 
-        public Plupp(bool rightDirection, int speed, float maxWidth, float maxHeight)
+        public Plupp(int speed, float maxWidth, float maxHeight)
         {
            
-            this.rightDirection = rightDirection;
+           
             this.speed = speed;
             this.maxWidth = maxWidth;
             this.maxHeight = maxHeight;
@@ -34,18 +34,20 @@ namespace FaceTrackingBasics
 
             Thickness margin = new Thickness();
             Random random = new Random();
-            float height = random.Next(0, 60);
-            if(rightDirection)
-                margin = new Thickness(-maxWidth + ellipse.Width, -height * 3.8,0,0);
-            else if(!rightDirection)
-                margin = new Thickness(maxWidth + ellipse.Width, -height * 3.8, 0, 0);
+            this.rightDirection = random.Next(0, 2);
+            float height = random.Next(0, 70);
+            System.Console.WriteLine(rightDirection);
+            if(rightDirection == 0)
+                margin = new Thickness(-maxWidth + ellipse.Width, -height * 3.5, 0, 0);
+            else
+                margin = new Thickness(maxWidth - ellipse.Width, -height * 3.5, 0, 0);
             this.ellipse.Margin = margin;
         }
 
         public Rect returnRectangle()
         {
             Size size = new Size(ellipse.Width, ellipse.Height);
-            Rect rect = new Rect(new Point((maxWidth + ellipse.Margin.Left) / 2, (maxHeight + ellipse.Margin.Top) / 2), size);
+            Rect rect = new Rect(new Point((maxWidth + ellipse.Margin.Left - ellipse.Width) / 2, (maxHeight + ellipse.Margin.Top - ellipse.Height) / 2), size);
             return rect;
         }
 
@@ -54,14 +56,14 @@ namespace FaceTrackingBasics
             Thickness margin;
             switch (rightDirection)
             {
-                case true:
+                case 0:
                     margin = ellipse.Margin;
                     margin.Left += 3;
                     ellipse.Margin = margin;
                     break;
-                case false:
+                case 1:
                     margin = ellipse.Margin;
-                    margin.Left += 3;
+                    margin.Left -= 3;
                     ellipse.Margin = margin;
                     break;
                 default:

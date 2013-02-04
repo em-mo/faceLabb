@@ -112,7 +112,6 @@ namespace FaceTrackingBasics
             faceTrackingViewer.Dispose();
         }
 
-        private int count = 0;
         private void KinectSensorOnAllFramesReady(object sender, AllFramesReadyEventArgs allFramesReadyEventArgs)
         {
 
@@ -163,7 +162,7 @@ namespace FaceTrackingBasics
                     pluppar.Remove(plupp);
                 }
                 
-                float mouthState = faceTrackingViewer.ReturnMouthState();
+                float mouthState = faceTrackingViewer.ReturnMouthState(AnimationUnit.JawLower);
 
                 if (muncher.checkBite(mouthState))
                 {
@@ -176,11 +175,16 @@ namespace FaceTrackingBasics
                     }
                 }
 
+                //if (pluppar.Count > 0)
+                //    textBox3.Text = pluppar[0].returnRectangle().Y.ToString();
+
+                //textBox3.Text = faceTrackingViewer.ReturnFaceRect().X.ToString() + " " + faceTrackingViewer.ReturnFaceRect().Y.ToString();
+
                 Vector3DF vector = faceTrackingViewer.ReturnRotationValues();
                 float mouthValue = mouthState;
                 textBox1.Text = vector.X.ToString();
                 textBox2.Text = vector.Y.ToString();
-                //textBox3.Text = vector.Z.ToString();
+                textBox3.Text = vector.Z.ToString();
                 textBoxMun.Text = mouthValue.ToString();
             }
         }
@@ -216,7 +220,7 @@ namespace FaceTrackingBasics
 
         private bool checkPluppToHeadDirection(System.Windows.Rect head, System.Windows.Rect plupp)
         {
-            double diffX = head.X + head.Width / 2 - plupp.X + plupp.Width / 2;
+            double diffX = head.X + (head.Width / 2) - plupp.X - (plupp.Width / 2);
             double headDirection = faceTrackingViewer.ReturnRotationValues().Y;
 
             if (diffX < 0 && headDirection < 0 || diffX > 0 && headDirection > 0)
@@ -241,7 +245,7 @@ namespace FaceTrackingBasics
 
         public void TimerEnd()
         {
-            Plupp plupp = new Plupp(true, 5, (float)MainGrid.ActualWidth, (float)MainGrid.ActualHeight);
+            Plupp plupp = new Plupp(5, (float)MainGrid.ActualWidth, (float)MainGrid.ActualHeight);
             MainGrid.Children.Add(plupp.ellipse);
             System.Windows.Rect rect = plupp.returnRectangle();
             pluppar.Add(plupp);

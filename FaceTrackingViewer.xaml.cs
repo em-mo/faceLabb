@@ -258,11 +258,11 @@ namespace FaceTrackingBasics
             return new Vector3DF();
         }
 
-        public float ReturnMouthState()
+        public float ReturnMouthState(AnimationUnit au)
         {
             foreach (SkeletonFaceTracker tracker in trackedSkeletons.Values)
             {
-                return tracker.getMouthState();
+                return tracker.getState(au);
             }
             return 0;
         }
@@ -310,10 +310,10 @@ namespace FaceTrackingBasics
                 return new Vector3DF();
             }
 
-            public float getMouthState()
+            public float getState(AnimationUnit au)
             {
                 if(frame != null)
-                    return frame.GetAnimationUnitCoefficients()[AnimationUnit.JawLower];
+                    return frame.GetAnimationUnitCoefficients()[au];
                 return 0;
             }
 
