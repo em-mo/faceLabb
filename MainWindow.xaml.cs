@@ -200,7 +200,7 @@ namespace FaceTrackingBasics
                     state = MouthState.Open;
                 }
                 else if (state == MouthState.Open && mouthPosition < ClosedThreshold)
-                {
+                {   
                     state = MouthState.Closed;
                     result = true;
                 }
